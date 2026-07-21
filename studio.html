@@ -832,10 +832,12 @@ function fitTitle(){
 function setType(btn){
   document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
-  // Auto-set first word color based on type
+  // Set first word color based on type, keeping any custom colors on later words
   const map={DUNGEON:'blue',PVE:'green',PVP:'red',FIELD:'purple',DS:'gold'};
   const ci=document.getElementById('c-colors');
-  if(!ci.value) ci.value=map[btn.dataset.t]||'white';
+  const parts=ci.value?ci.value.split(',').map(s=>s.trim()):[];
+  parts[0]=map[btn.dataset.t]||'white';
+  ci.value=parts.join(',');
   sync();
 }
 

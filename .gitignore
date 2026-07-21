@@ -1,0 +1,7 @@
+# Claude Code local settings (not needed for the published site)
+.claude/
+
+# Local design references (not used by studio.html at runtime;
+# excluded from the public repo since one of these is a competitor's card
+# kept only as a private style reference, not meant for redistribution)
+references/

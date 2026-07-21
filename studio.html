@@ -696,11 +696,7 @@ const PARAGON_TREE_ROW7={ // paragon -> 2 choices
 };
 let paragonTreePicks={}; // 'row2'/'row3'/'row5'/'row7' -> chosen skill name (or absent/null)
 
-const subs=[
-  {n:'Paladin',e:'⚔',img:null},
-  {n:'DarkPaladin',e:'🌑',img:null},
-  {n:'Guardian',e:'🛡',img:null},
-];
+const subs=[];
 const SET_MAX_ITEMS=4;
 const sets=[
   {lbl:'Set 1',better:false,slots:[]},
@@ -713,13 +709,7 @@ let statCaps=[
   {n:'Crit Chance',v:'50%',lines:3},
   {n:'Evasion',v:'40%',lines:2},
 ];
-let statPriority=[
-  {n:'Crit Dmg',v:'>280%',lines:7},
-  {n:'Atk %',v:'>182%',lines:7},
-  {n:'Racial Dmg',v:'>160%',lines:4},
-  {n:'Def %',v:'~',lines:2},
-  {n:'HP %',v:'~',lines:2},
-];
+let statPriority=[];
 const STAT_SUGGESTIONS=['Crit Dmg','Atk %','Def %','HP %','Racial Dmg','Lifesteal','Boss Dmg','PVP Dmg','Skill Dmg','Debuff Resist'];
 
 const MOUNT_SKILLS=['Fierce Attack','Steadfast Defense','Glittering Luck'];
@@ -779,19 +769,11 @@ const TRAITS=['Quicken','Double Attack','Curse','Stone Skin','Penetration','Vita
 const TRAIT_MAX_LEVEL=5, TRAIT_BUDGET=15, TRAIT_MAX_PICKS=5;
 const traitCost=lvl=>lvl*(lvl+1)/2;
 let traitImgs={};
-let combos=[{Quicken:5}];
+let combos=[{}];
 
 // ── INIT ──
 onload=()=>{
-  ['c-title','c-sub','c-bname','c-char','c-credit'].forEach(id=>{
-    const defaults={
-      'c-title':'DUNGEON SLAVE SOLO HOLY KNIGHT','c-sub':'376F',
-      'c-bname':'Dungeon Slave HK','c-char':'Man of Steel',
-      'c-credit':'Created by: PapaV     Special thanks: Voracity',
-    };
-    if(defaults[id]) document.getElementById(id).value=defaults[id];
-  });
-  renderBasePicker(); pickBase('Paladin'); pickTier('second','DarkPaladin'); pickTier('third','Guardian'); pickTier('paragon','Holy Knight');
+  renderBasePicker(); updateClassTreeCard();
   renderEqCtrl(); renderSets(); renderVirtues(); renderStatCtrl(); renderStats(); renderComboCtrl(); renderCardCombos(); syncMounts(); syncCompFairy(); sync();
   applyImg('badge','branding/oxo-logo.png');
   preloadTraitIcons();
@@ -1365,7 +1347,7 @@ function closeRunePicker(){
 // ── VIRTUE (5 virtue types, up to 8 total — grouped "Nx Name" rows like TheGoddess reference cards) ──
 const VIRTUES=['Mercy','Glory','Justice','Devotion','Honor'];
 const VIRTUE_MAX_SLOTS=8;
-let virtueCounts={Justice:6,Devotion:2};
+let virtueCounts={};
 let virtueImgs={};
 function virtueTotal(){return Object.values(virtueCounts).reduce((a,b)=>a+b,0);}
 function renderVirtues(){

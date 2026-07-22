@@ -554,20 +554,20 @@ function up(t){
   upTarget=t;const f=document.getElementById('fi');f.value='';f.click();
 }
 // ── SKILL RUNE PICKER (reuses the same icons/skills/{Name}.png art as the Subclasses row) ──
-const ALL_SKILL_NAMES=Object.entries(CLASS_TREE).flatMap(([base,t])=>[base,...t.second,...t.third]);
 let runePickerTarget=null;
 function openRunePicker(t){
   runePickerTarget=t;
+  const names=subs.map(s=>s.n); // only the base/2nd/3rd classes actually picked for this build
   const grid=document.getElementById('rnp-grid');
-  grid.innerHTML=ALL_SKILL_NAMES.map(name=>{
+  grid.innerHTML=names.length?names.map(name=>{
     const src=skillImgs[name];
     const safe=name.replace(/'/g,"\\'");
     return `<div class="itp-opt" onclick="selectRuneIcon('${safe}')">
       <div class="itp-ic" id="rnp-ic-${mtSafeKey(name)}">${src?`<img src="${src}">`:'⬦'}</div>
       <div class="itp-lbl">${name}</div>
     </div>`;
-  }).join('');
-  ALL_SKILL_NAMES.forEach(name=>{
+  }).join(''):'<div class="itp-empty" style="grid-column:1/-1">Pick a Class Progression first.</div>';
+  names.forEach(name=>{
     if(skillImgs[name])return;
     tryLoadImage(`icons/skills/${name}.png`,src=>{
       skillImgs[name]=src;

@@ -66,7 +66,7 @@
       </div>
     </div>
     <div><lbl>TITLE — word colors (e.g. gold,white,gold)</lbl><input type="text" id="c-colors" placeholder="gold,white,gold" oninput="sync()"></div>
-    <div><lbl>HUNTER / BUILD NAME</lbl><input type="text" id="c-bname" placeholder="e.g. Pulv-Des-SE" oninput="sync()"></div>
+    <input type="hidden" id="c-bname">
     <div><lbl>CHARACTERISTIC (positive only)</lbl><select id="c-char" onchange="sync()">
       <option value="">— Select —</option>
       <option>Charismatic</option>
@@ -85,14 +85,6 @@
     </select></div>
     <div><lbl>CREATOR / CREDITS</lbl><input type="text" id="c-credit" placeholder="Created by: PapaV" oninput="sync()"></div>
     <div><lbl>DESCRIPTION (optional — leave blank to hide)</lbl><textarea id="c-desc" rows="3" placeholder="Notes about the build, e.g. why this gear/trait combo, playstyle tips, etc." oninput="sync()"></textarea></div>
-  </div>
-
-  <div class="step" data-step="background">
-    <div class="step-sub">Optional — a background image and badge for the card.</div>
-    <button class="add" onclick="up('bg')">🖼 Upload Background Image</button>
-    <button class="add" onclick="clrBg()">✕ Remove Background</button>
-    <div><lbl>OVERLAY DARKNESS</lbl><input type="range" id="bkd" min="55" max="97" value="84" style="width:100%;accent-color:var(--gold)" oninput="setDark(this.value)"></div>
-    <div><lbl>BADGE / LOGO (top right — defaults to the OXO crest)</lbl><button class="add" onclick="up('badge')">🏷 Replace Badge Image</button></div>
   </div>
 
   <div class="step" data-step="class-base">
@@ -149,12 +141,8 @@
   </div>
 
   <div class="step" data-step="equipment">
-    <div class="wiz-trigger" style="cursor:pointer" onclick="document.getElementById('dual').classList.toggle('on');renderSets()">
-      <div class="wt-ic" style="font-size:14px">⚔⚔</div>
-      <div><div class="wt-txt">Dual Unique Equip</div><div class="wt-sub">Tap to toggle — equipping two unique items</div></div>
-      <div class="tog" id="dual" style="margin-left:auto"></div>
-    </div>
-    <div class="step-h" style="font-size:13px;margin-top:12px;">SETS</div>
+    <div id="dual" style="display:none"></div>
+    <div class="step-h" style="font-size:13px;">SETS</div>
     <div id="eq-ctrl"></div>
     <button class="add" onclick="addSet()">+ ADD SET</button>
     <div class="step-h" style="margin-top:14px;font-size:13px;">ITEMS</div>
@@ -176,6 +164,14 @@
     <div id="stat-priority-ctrl"></div>
     <button class="add" onclick="addPriorityStat()">+ ADD STAT</button>
     <datalist id="stat-name-suggestions"></datalist>
+  </div>
+
+  <div class="step" data-step="background">
+    <div class="step-sub">Optional — a background image and badge for the card.</div>
+    <button class="add" onclick="up('bg')">🖼 Upload Background Image</button>
+    <button class="add" onclick="clrBg()">✕ Remove Background</button>
+    <div><lbl>OVERLAY DARKNESS</lbl><input type="range" id="bkd" min="55" max="97" value="84" style="width:100%;accent-color:var(--gold)" oninput="setDark(this.value)"></div>
+    <div><lbl>BADGE / LOGO (top right — defaults to the OXO crest)</lbl><button class="add" onclick="up('badge')">🏷 Replace Badge Image</button></div>
   </div>
 
   <div class="step" data-step="review">

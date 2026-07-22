@@ -51,8 +51,7 @@
   <button class="btn btn-s" onclick="saveBuild()">💾 SAVE</button>
   <button class="btn btn-s" onclick="loadBuild()">📂 LOAD</button>
   <span id="ok">✓ SAVED!</span>
-  <div class="sep"></div>
-  <span class="tl">DUAL EQUIP</span><div class="tog" id="dual" onclick="this.classList.toggle('on');renderSets()"></div>
+  <div id="dual" style="display:none"></div>
   <div class="sep"></div>
   <button class="zbt btn-s" onclick="zoom(.1)">＋</button>
   <span class="zv" id="zd">60%</span>
@@ -76,7 +75,7 @@
       </div>
     </div>
     <div><lbl>TITLE — word colors (e.g. gold,white,gold)</lbl><input type="text" id="c-colors" placeholder="gold,white,gold" oninput="sync()"></div>
-    <div><lbl>HUNTER / BUILD NAME</lbl><input type="text" id="c-bname" placeholder="e.g. Pulv-Des-SE" oninput="sync()"></div>
+    <input type="hidden" id="c-bname">
     <div><lbl>CHARACTERISTIC (positive only)</lbl><select id="c-char" onchange="sync()">
       <option value="">— Select —</option>
       <option>Charismatic</option>
@@ -97,13 +96,6 @@
     <div><lbl>DESCRIPTION (optional — leave blank to hide)</lbl><textarea id="c-desc" rows="3" placeholder="Notes about the build, e.g. why this gear/trait combo, playstyle tips, etc." oninput="sync()"></textarea></div>
   </div></div>
 
-  <div class="cs"><div class="cs-h">BACKGROUND ART</div><div class="cs-b">
-    <button class="add" onclick="up('bg')">🖼 Upload Background Image</button>
-    <button class="add" onclick="clrBg()">✕ Remove Background</button>
-    <div><lbl>OVERLAY DARKNESS</lbl><input type="range" id="bkd" min="55" max="97" value="84" style="width:100%;accent-color:var(--gold)" oninput="setDark(this.value)"></div>
-    <div><lbl>BADGE / LOGO (top right — defaults to the OXO crest)</lbl><button class="add" onclick="up('badge')">🏷 Replace Badge Image</button></div>
-  </div></div>
-
   <div class="cs"><div class="cs-h">CLASS PROGRESSION</div><div class="cs-b">
     <input type="hidden" id="c-cls">
     <lbl>1ST CLASS (BASE)</lbl>
@@ -122,21 +114,9 @@
     </div>
   </div></div>
 
-  <div class="cs"><div class="cs-h">MOUNTS & EQUIPMENT</div><div class="cs-b">
-    <lbl>MOUNT SLOTS (click icon on card to pick Skill/Trait)</lbl>
-    <div style="font-family:'Cinzel',serif;font-size:8px;color:#3a3060">Add labels for each mount slot:</div>
-    <div class="g3">
-      <div><lbl>Slot 1 label</lbl><input type="text" id="mt0l" placeholder="Skill" oninput="syncMounts()"></div>
-      <div><lbl>Slot 2 label</lbl><input type="text" id="mt1l" placeholder="Trait" oninput="syncMounts()"></div>
-      <div><lbl>Slot 3 label</lbl><input type="text" id="mt2l" placeholder="OPT" oninput="syncMounts()"></div>
-    </div>
-    <div><lbl>MOUNT EQUIPMENT (click icon on card to pick version)</lbl></div>
-    <div class="g3">
-      <div><lbl>Horseshoe lbl</lbl><input type="text" id="st0l" placeholder="Horseshoe" oninput="syncMounts()"></div>
-      <div><lbl>Saddle lbl</lbl><input type="text" id="st1l" placeholder="Saddle" oninput="syncMounts()"></div>
-      <div><lbl>Rein lbl</lbl><input type="text" id="st2l" placeholder="Rein" oninput="syncMounts()"></div>
-    </div>
-  </div></div>
+  <!-- Mount slot/equipment labels are fixed (Skill/Trait/OPT, Horseshoe/Saddle/Rein) — no need for a customization UI, but syncMounts() expects these ids to exist. -->
+  <input type="hidden" id="mt0l"><input type="hidden" id="mt1l"><input type="hidden" id="mt2l">
+  <input type="hidden" id="st0l"><input type="hidden" id="st1l"><input type="hidden" id="st2l">
 
   <div class="cs"><div class="cs-h">TRAIT COMBOS</div><div class="cs-b">
     <div style="font-family:'Cinzel',serif;font-size:8px;color:#3a3060">Click a trait to level it up (0→5, wraps back to 0). 15 points per combo, max 5 traits.</div>
@@ -156,6 +136,13 @@
     <div id="stat-priority-ctrl"></div>
     <button class="add" onclick="addPriorityStat()">+ ADD STAT</button>
     <datalist id="stat-name-suggestions"></datalist>
+  </div></div>
+
+  <div class="cs"><div class="cs-h">BACKGROUND ART</div><div class="cs-b">
+    <button class="add" onclick="up('bg')">🖼 Upload Background Image</button>
+    <button class="add" onclick="clrBg()">✕ Remove Background</button>
+    <div><lbl>OVERLAY DARKNESS</lbl><input type="range" id="bkd" min="55" max="97" value="84" style="width:100%;accent-color:var(--gold)" oninput="setDark(this.value)"></div>
+    <div><lbl>BADGE / LOGO (top right — defaults to the OXO crest)</lbl><button class="add" onclick="up('badge')">🏷 Replace Badge Image</button></div>
   </div></div>
 
 </div><!-- /ctrl -->

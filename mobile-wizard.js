@@ -4,7 +4,6 @@
 // helpers for pieces of the UI that only exist on the (here, off-screen) card.
 const STEPS=[
   {id:'basics',label:'Basics'},
-  {id:'background',label:'Background Art'},
   {id:'class-base',label:'1st Class'},
   {id:'class-second',label:'2nd Class'},
   {id:'class-third',label:'3rd Class'},
@@ -16,6 +15,7 @@ const STEPS=[
   {id:'equipment',label:'Equipment Sets'},
   {id:'runes-virtues',label:'Runes & Virtues'},
   {id:'stats',label:'Stats Allocation'},
+  {id:'background',label:'Background Art'},
   {id:'review',label:'Review & Export'},
 ];
 let curStep=0;

@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>EHT Card Studio — Mobile</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <link rel="stylesheet" href="card.css">
+<link rel="stylesheet" href="mobile.css">
 </head>
 <body>
 
@@ -42,28 +43,17 @@
 })();
 </script>
 
-<!-- TOPBAR -->
-<div id="tb">
-  <div class="logo">⚔ EHT CARD STUDIO</div>
-  <div class="sep"></div>
-  <button class="btn btn-g" onclick="doExport()">⬇ EXPORT PNG</button>
-  <button class="btn btn-s" onclick="if(confirm('Reset?'))location.reload()">↺ RESET</button>
-  <button class="btn btn-s" onclick="saveBuild()">💾 SAVE</button>
-  <button class="btn btn-s" onclick="loadBuild()">📂 LOAD</button>
-  <span id="ok">✓ SAVED!</span>
-  <div class="sep"></div>
-  <span class="tl">DUAL EQUIP</span><div class="tog" id="dual" onclick="this.classList.toggle('on');renderSets()"></div>
-  <div class="sep"></div>
-  <button class="zbt btn-s" onclick="zoom(.1)">＋</button>
-  <span class="zv" id="zd">60%</span>
-  <button class="zbt btn-s" onclick="zoom(-.1)">－</button>
-  <button class="btn btn-s" style="padding:5px 10px;font-size:8px" onclick="zFit()">FIT</button>
+<!-- WIZARD HEADER -->
+<div id="wiz-head">
+  <div id="wiz-title">Basics</div>
+  <div id="wiz-progress"><div id="wiz-progress-bar" style="width:0%"></div></div>
+  <div id="wiz-step-label">Step 1 of 14</div>
 </div>
 
-<!-- CONTROLS -->
+<!-- WIZARD STEPS -->
 <div id="ctrl">
 
-  <div class="cs"><div class="cs-h">BASICS</div><div class="cs-b">
+  <div class="step" data-step="basics">
     <div><lbl>BUILD TITLE (big text)</lbl><input type="text" id="c-title" placeholder="DUNGEON SLAVE SOLO HOLY KNIGHT" oninput="sync()"></div>
     <div><lbl>SUBTITLE / FLOOR</lbl><input type="text" id="c-sub" placeholder="376F" oninput="sync()"></div>
     <div><lbl>TITLE COLOR SCHEME</lbl>
@@ -95,75 +85,125 @@
     </select></div>
     <div><lbl>CREATOR / CREDITS</lbl><input type="text" id="c-credit" placeholder="Created by: PapaV" oninput="sync()"></div>
     <div><lbl>DESCRIPTION (optional — leave blank to hide)</lbl><textarea id="c-desc" rows="3" placeholder="Notes about the build, e.g. why this gear/trait combo, playstyle tips, etc." oninput="sync()"></textarea></div>
-  </div></div>
+  </div>
 
-  <div class="cs"><div class="cs-h">BACKGROUND ART</div><div class="cs-b">
+  <div class="step" data-step="background">
+    <div class="step-sub">Optional — a background image and badge for the card.</div>
     <button class="add" onclick="up('bg')">🖼 Upload Background Image</button>
     <button class="add" onclick="clrBg()">✕ Remove Background</button>
     <div><lbl>OVERLAY DARKNESS</lbl><input type="range" id="bkd" min="55" max="97" value="84" style="width:100%;accent-color:var(--gold)" oninput="setDark(this.value)"></div>
     <div><lbl>BADGE / LOGO (top right — defaults to the OXO crest)</lbl><button class="add" onclick="up('badge')">🏷 Replace Badge Image</button></div>
-  </div></div>
+  </div>
 
-  <div class="cs"><div class="cs-h">CLASS PROGRESSION</div><div class="cs-b">
+  <div class="step" data-step="class-base">
+    <div class="step-sub">Pick your hunter's base class.</div>
     <input type="hidden" id="c-cls">
-    <lbl>1ST CLASS (BASE)</lbl>
     <div class="g3" id="base-ctrl"></div>
-    <div id="tier2-wrap" style="display:none">
-      <lbl>2ND CLASS</lbl>
-      <div class="g3" id="tier2-ctrl"></div>
-    </div>
-    <div id="tier3-wrap" style="display:none">
-      <lbl>3RD CLASS</lbl>
-      <div class="g3" id="tier3-ctrl"></div>
-    </div>
-    <div id="paragon-wrap" style="display:none">
-      <lbl>PARAGON (4TH CLASS)</lbl>
-      <div class="g2" id="paragon-ctrl"></div>
-    </div>
-  </div></div>
+  </div>
 
-  <div class="cs"><div class="cs-h">MOUNTS & EQUIPMENT</div><div class="cs-b">
-    <lbl>MOUNT SLOTS (click icon on card to pick Skill/Trait)</lbl>
-    <div style="font-family:'Cinzel',serif;font-size:8px;color:#3a3060">Add labels for each mount slot:</div>
-    <div class="g3">
-      <div><lbl>Slot 1 label</lbl><input type="text" id="mt0l" placeholder="Skill" oninput="syncMounts()"></div>
-      <div><lbl>Slot 2 label</lbl><input type="text" id="mt1l" placeholder="Trait" oninput="syncMounts()"></div>
-      <div><lbl>Slot 3 label</lbl><input type="text" id="mt2l" placeholder="OPT" oninput="syncMounts()"></div>
-    </div>
-    <div><lbl>MOUNT EQUIPMENT (click icon on card to pick version)</lbl></div>
-    <div class="g3">
-      <div><lbl>Horseshoe lbl</lbl><input type="text" id="st0l" placeholder="Horseshoe" oninput="syncMounts()"></div>
-      <div><lbl>Saddle lbl</lbl><input type="text" id="st1l" placeholder="Saddle" oninput="syncMounts()"></div>
-      <div><lbl>Rein lbl</lbl><input type="text" id="st2l" placeholder="Rein" oninput="syncMounts()"></div>
-    </div>
-  </div></div>
+  <div class="step" data-step="class-second">
+    <div class="step-sub">Pick the 2nd class.</div>
+    <div id="tier2-wrap"><div class="g3" id="tier2-ctrl"></div></div>
+  </div>
 
-  <div class="cs"><div class="cs-h">TRAIT COMBOS</div><div class="cs-b">
-    <div style="font-family:'Cinzel',serif;font-size:8px;color:#3a3060">Click a trait to level it up (0→5, wraps back to 0). 15 points per combo, max 5 traits.</div>
+  <div class="step" data-step="class-third">
+    <div class="step-sub">Pick the 3rd class.</div>
+    <div id="tier3-wrap"><div class="g3" id="tier3-ctrl"></div></div>
+  </div>
+
+  <div class="step" data-step="class-paragon">
+    <div class="step-sub">Pick the Paragon (4th class).</div>
+    <div id="paragon-wrap"><div class="g2" id="paragon-ctrl"></div></div>
+  </div>
+
+  <div class="step" data-step="paragon-skill-tree">
+    <div class="step-sub">Tap a skill in each row to invest in it. Rows without a choice are auto-granted.</div>
+    <div id="pst-body"></div>
+  </div>
+
+  <div class="step" data-step="mounts">
+    <!-- slot label text isn't customized on mobile, but syncMounts() needs these ids to exist -->
+    <input type="hidden" id="mt0l"><input type="hidden" id="mt1l"><input type="hidden" id="mt2l">
+    <input type="hidden" id="st0l"><input type="hidden" id="st1l"><input type="hidden" id="st2l">
+    <div class="step-h" style="font-size:13px;">MOUNT</div>
+    <button class="wiz-trigger mount-ms" onclick="openMountPicker('m0')"><div class="wt-ic" id="mob-m0-ic">🐉</div><div><div class="wt-txt">Mount Skill</div><div class="wt-sub">Tap to choose</div></div></button>
+    <button class="wiz-trigger mount-ms" onclick="openMountPicker('m1')"><div class="wt-ic" id="mob-m1-ic">⚡</div><div><div class="wt-txt">Mount Trait</div><div class="wt-sub">Tap to choose</div></div></button>
+    <button class="wiz-trigger mount-ms" onclick="openMountPicker('m2')"><div class="wt-ic" id="mob-m2-ic">?</div><div><div class="wt-txt">Mount Trait (Optional)</div><div class="wt-sub">Tap to choose</div></div></button>
+    <div class="step-h" style="margin-top:14px;font-size:13px;">MOUNT EQUIPMENT</div>
+    <button class="wiz-trigger mount-ms" onclick="openMountPicker('st0')"><div class="wt-ic" id="mob-st0-ic">🐴</div><div><div class="wt-txt">Horseshoe</div><div class="wt-sub">Tap to choose</div></div></button>
+    <button class="wiz-trigger mount-ms" onclick="openMountPicker('st1')"><div class="wt-ic" id="mob-st1-ic">🐴</div><div><div class="wt-txt">Saddle</div><div class="wt-sub">Tap to choose</div></div></button>
+    <button class="wiz-trigger mount-ms" onclick="openMountPicker('st2')"><div class="wt-ic" id="mob-st2-ic">🐴</div><div><div class="wt-txt">Rein</div><div class="wt-sub">Tap to choose</div></div></button>
+  </div>
+
+  <div class="step" data-step="companion-fairy">
+    <div class="step-sub">Companion &amp; Fairy race/buff.</div>
+    <div><lbl>Companion</lbl><select id="c-comp-race-mobile" onchange="document.getElementById('c-comp-race').value=this.value;syncCompFairy()"><option>Dragon</option><option>Any</option></select></div>
+    <div><lbl>Fairy Race</lbl><select id="c-fairy-race-mobile" onchange="document.getElementById('c-fairy-race').value=this.value;syncCompFairy()"><option>Dragon</option><option>Any</option></select></div>
+    <div><lbl>Fairy Buff</lbl><select id="c-fairy-buff-mobile" onchange="document.getElementById('c-fairy-buff').value=this.value;syncCompFairy()"><option>HP Buff</option><option>Atk + Def Buff</option></select></div>
+  </div>
+
+  <div class="step" data-step="traits">
+    <div class="step-sub">Tap a trait to level it up (0→5, wraps back to 0). 15 points per combo, max 5 traits.</div>
     <div id="combo-ctrl"></div>
     <button class="add" onclick="addCombo()">+ ADD COMBO (OR)</button>
-  </div></div>
+  </div>
 
-  <div class="cs"><div class="cs-h">EQUIPMENT SETS</div><div class="cs-b">
+  <div class="step" data-step="equipment">
+    <div class="wiz-trigger" style="cursor:pointer" onclick="document.getElementById('dual').classList.toggle('on');renderSets()">
+      <div class="wt-ic" style="font-size:14px">⚔⚔</div>
+      <div><div class="wt-txt">Dual Unique Equip</div><div class="wt-sub">Tap to toggle — equipping two unique items</div></div>
+      <div class="tog" id="dual" style="margin-left:auto"></div>
+    </div>
+    <div class="step-h" style="font-size:13px;margin-top:12px;">SETS</div>
     <div id="eq-ctrl"></div>
     <button class="add" onclick="addSet()">+ ADD SET</button>
-  </div></div>
+    <div class="step-h" style="margin-top:14px;font-size:13px;">ITEMS</div>
+    <div id="mob-sets"></div>
+  </div>
 
-  <div class="cs"><div class="cs-h">GENERAL STATS ALLOCATION</div><div class="cs-b">
-    <div style="font-family:'Cinzel',serif;font-size:8px;color:#3a3060;margin-bottom:4px">Core caps (fixed name, edit value/lines — override for Barbarian etc.)</div>
+  <div class="step" data-step="runes-virtues">
+    <div class="step-h" style="font-size:13px;">SKILL RUNES</div>
+    <button class="wiz-trigger rune-ms" onclick="openRunePicker('rn0')"><div class="wt-ic" id="mob-rn0-ic">⭐</div><div><div class="wt-txt">Priority Rune</div><div class="wt-sub">Tap to choose</div></div></button>
+    <button class="wiz-trigger rune-ms" onclick="openRunePicker('rn1')"><div class="wt-ic" id="mob-rn1-ic">💀</div><div><div class="wt-txt">Alt Rune</div><div class="wt-sub">Tap to choose</div></div></button>
+    <div class="step-h" style="margin-top:14px;font-size:13px;">VIRTUES</div>
+    <div id="mob-virtues"></div>
+  </div>
+
+  <div class="step" data-step="stats">
+    <div class="step-sub">Core caps (fixed name, edit value/lines — override for Barbarian etc.)</div>
     <div id="stat-caps-ctrl"></div>
-    <div style="font-family:'Cinzel',serif;font-size:8px;color:#3a3060;margin:6px 0 4px">Priority stats — top to bottom, drag order with ↑↓</div>
+    <div class="step-sub" style="margin-top:8px">Priority stats — top to bottom:</div>
     <div id="stat-priority-ctrl"></div>
     <button class="add" onclick="addPriorityStat()">+ ADD STAT</button>
     <datalist id="stat-name-suggestions"></datalist>
-  </div></div>
+  </div>
+
+  <div class="step" data-step="review">
+    <div class="step-sub">Tap "Show Card" to preview your build before exporting.</div>
+    <div id="review-actions">
+      <button onclick="mobShowCard()" style="background:var(--gold);border-color:var(--gold2);color:#08050a;font-weight:700;">👁 SHOW CARD</button>
+      <button class="btn-g" onclick="mobExportFlow()">⬇ EXPORT PNG</button>
+      <button onclick="saveBuild()" style="background:transparent;border-color:var(--border2);color:var(--text);">💾 SAVE BUILD</button>
+      <button onclick="loadBuild()" style="background:transparent;border-color:var(--border2);color:var(--text);">📂 LOAD BUILD</button>
+      <span id="ok" style="font-family:'Cinzel',serif;font-size:11px;color:var(--green);opacity:0;transition:opacity .3s;text-align:center;">✓ SAVED!</span>
+    </div>
+  </div>
 
 </div><!-- /ctrl -->
 
-<!-- PREVIEW -->
+<!-- WIZARD NAV -->
+<div id="wiz-nav">
+  <button id="wiz-back" onclick="prevStep()">← BACK</button>
+  <button id="wiz-next" class="primary" onclick="nextStep()">NEXT →</button>
+</div>
+<span id="zd" style="display:none"></span>
+
+<button id="review-close" onclick="mobHideCard()">✕</button>
+
+<!-- PREVIEW / CARD (kept off-screen until Review step) -->
 <div id="pv">
   <div class="zb">
-    <span class="zl">PREVIEW — Click any icon box on card to upload image</span>
+    <span class="zl">PREVIEW</span>
     <button class="zbt" onclick="zoom(.1)">＋</button>
     <span class="zv" id="zd2">60%</span>
     <button class="zbt" onclick="zoom(-.1)">－</button>
@@ -351,5 +391,6 @@
 
 <script src="game-data.js"></script>
 <script src="card-app.js"></script>
+<script src="mobile-wizard.js"></script>
 </body>
 </html>

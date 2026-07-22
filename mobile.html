@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EHT Card Studio — Mobile</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="stylesheet" href="card.css">
+</head>
+<body>
+
+<!-- ACCESS GATE -->
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:#0d0a08;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;font-family:'IM Fell English',Georgia,serif;">
+  <div style="font-family:'Cinzel Decorative',serif;color:#d4a030;font-size:22px;letter-spacing:2px;text-shadow:0 0 10px rgba(212,160,48,.4);">⚔ EHT CARD STUDIO</div>
+  <div style="font-family:'Cinzel',serif;color:#7a6a4a;font-size:11px;letter-spacing:1px;">NG / OXO GUILD ACCESS ONLY</div>
+  <form id="gateForm" style="display:flex;gap:8px;">
+    <input id="gatePass" type="password" placeholder="Passphrase" autofocus style="background:#100c09;border:1px solid rgba(200,150,40,0.5);color:#e8ddc8;padding:10px 14px;font-family:'Cinzel',serif;font-size:12px;outline:none;">
+    <button type="submit" style="background:#d4a030;border:1px solid #f0c050;color:#08050a;font-weight:700;padding:10px 18px;font-family:'Cinzel',serif;font-size:11px;cursor:pointer;letter-spacing:.5px;">ENTER</button>
+  </form>
+  <div id="gateErr" style="color:#b5232f;font-family:'Cinzel',serif;font-size:11px;opacity:0;transition:opacity .2s;">Wrong passphrase.</div>
+</div>
+<script>
+(function(){
+  var PASS = "oxo2026";
+  var gate = document.getElementById('gate');
+  if(localStorage.getItem('ehtGateOK') === '1'){
+    gate.style.display = 'none';
+    return;
+  }
+  document.getElementById('gateForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var val = document.getElementById('gatePass').value.trim().toLowerCase();
+    if(val === PASS){
+      localStorage.setItem('ehtGateOK', '1');
+      gate.style.display = 'none';
+    } else {
+      document.getElementById('gateErr').style.opacity = '1';
+      document.getElementById('gatePass').value = '';
+    }
+  });
+})();
+</script>
+
+<!-- TOPBAR -->
+<div id="tb">
+  <div class="logo">⚔ EHT CARD STUDIO</div>
+  <div class="sep"></div>
+  <button class="btn btn-g" onclick="doExport()">⬇ EXPORT PNG</button>
+  <button class="btn btn-s" onclick="if(confirm('Reset?'))location.reload()">↺ RESET</button>
+  <button class="btn btn-s" onclick="saveBuild()">💾 SAVE</button>
+  <button class="btn btn-s" onclick="loadBuild()">📂 LOAD</button>
+  <span id="ok">✓ SAVED!</span>
+  <div class="sep"></div>
+  <span class="tl">DUAL EQUIP</span><div class="tog" id="dual" onclick="this.classList.toggle('on');renderSets()"></div>
+  <div class="sep"></div>
+  <button class="zbt btn-s" onclick="zoom(.1)">＋</button>
+  <span class="zv" id="zd">60%</span>
+  <button class="zbt btn-s" onclick="zoom(-.1)">－</button>
+  <button class="btn btn-s" style="padding:5px 10px;font-size:8px" onclick="zFit()">FIT</button>
+</div>
+
+<!-- CONTROLS -->
+<div id="ctrl">
+
+  <div class="cs"><div class="cs-h">BASICS</div><div class="cs-b">
+    <div><lbl>BUILD TITLE (big text)</lbl><input type="text" id="c-title" placeholder="DUNGEON SLAVE SOLO HOLY KNIGHT" oninput="sync()"></div>
+    <div><lbl>SUBTITLE / FLOOR</lbl><input type="text" id="c-sub" placeholder="376F" oninput="sync()"></div>
+    <div><lbl>TITLE COLOR SCHEME</lbl>
+      <div class="tbtns">
+        <button class="tbtn on" data-t="DUNGEON" onclick="setType(this)">DUNGEON</button>
+        <button class="tbtn" data-t="PVE" onclick="setType(this)">PVE</button>
+        <button class="tbtn" data-t="PVP" onclick="setType(this)">PVP</button>
+        <button class="tbtn" data-t="FIELD" onclick="setType(this)">FIELD</button>
+        <button class="tbtn" data-t="DS" onclick="setType(this)">DS</button>
+      </div>
+    </div>
+    <div><lbl>TITLE — word colors (e.g. gold,white,gold)</lbl><input type="text" id="c-colors" placeholder="gold,white,gold" oninput="sync()"></div>
+    <div><lbl>HUNTER / BUILD NAME</lbl><input type="text" id="c-bname" placeholder="e.g. Pulv-Des-SE" oninput="sync()"></div>
+    <div><lbl>CHARACTERISTIC (positive only)</lbl><select id="c-char" onchange="sync()">
+      <option value="">— Select —</option>
+      <option>Charismatic</option>
+      <option>Strong</option>
+      <option>Swift</option>
+      <option>Heroic</option>
+      <option>Man of Steel</option>
+      <option>Nimble</option>
+      <option>Optimistic</option>
+      <option>Rich</option>
+      <option>Energetic</option>
+      <option>Fast Runner</option>
+      <option>Gambler</option>
+      <option>Sharp</option>
+      <option>Skinny</option>
+    </select></div>
+    <div><lbl>CREATOR / CREDITS</lbl><input type="text" id="c-credit" placeholder="Created by: PapaV" oninput="sync()"></div>
+    <div><lbl>DESCRIPTION (optional — leave blank to hide)</lbl><textarea id="c-desc" rows="3" placeholder="Notes about the build, e.g. why this gear/trait combo, playstyle tips, etc." oninput="sync()"></textarea></div>
+  </div></div>
+
+  <div class="cs"><div class="cs-h">BACKGROUND ART</div><div class="cs-b">
+    <button class="add" onclick="up('bg')">🖼 Upload Background Image</button>
+    <button class="add" onclick="clrBg()">✕ Remove Background</button>
+    <div><lbl>OVERLAY DARKNESS</lbl><input type="range" id="bkd" min="55" max="97" value="84" style="width:100%;accent-color:var(--gold)" oninput="setDark(this.value)"></div>
+    <div><lbl>BADGE / LOGO (top right — defaults to the OXO crest)</lbl><button class="add" onclick="up('badge')">🏷 Replace Badge Image</button></div>
+  </div></div>
+
+  <div class="cs"><div class="cs-h">CLASS PROGRESSION</div><div class="cs-b">
+    <input type="hidden" id="c-cls">
+    <lbl>1ST CLASS (BASE)</lbl>
+    <div class="g3" id="base-ctrl"></div>
+    <div id="tier2-wrap" style="display:none">
+      <lbl>2ND CLASS</lbl>
+      <div class="g3" id="tier2-ctrl"></div>
+    </div>
+    <div id="tier3-wrap" style="display:none">
+      <lbl>3RD CLASS</lbl>
+      <div class="g3" id="tier3-ctrl"></div>
+    </div>
+    <div id="paragon-wrap" style="display:none">
+      <lbl>PARAGON (4TH CLASS)</lbl>
+      <div class="g2" id="paragon-ctrl"></div>
+    </div>
+  </div></div>
+
+  <div class="cs"><div class="cs-h">MOUNTS & EQUIPMENT</div><div class="cs-b">
+    <lbl>MOUNT SLOTS (click icon on card to pick Skill/Trait)</lbl>
+    <div style="font-family:'Cinzel',serif;font-size:8px;color:#3a3060">Add labels for each mount slot:</div>
+    <div class="g3">
+      <div><lbl>Slot 1 label</lbl><input type="text" id="mt0l" placeholder="Skill" oninput="syncMounts()"></div>
+      <div><lbl>Slot 2 label</lbl><input type="text" id="mt1l" placeholder="Trait" oninput="syncMounts()"></div>
+      <div><lbl>Slot 3 label</lbl><input type="text" id="mt2l" placeholder="OPT" oninput="syncMounts()"></div>
+    </div>
+    <div><lbl>MOUNT EQUIPMENT (click icon on card to pick version)</lbl></div>
+    <div class="g3">
+      <div><lbl>Horseshoe lbl</lbl><input type="text" id="st0l" placeholder="Horseshoe" oninput="syncMounts()"></div>
+      <div><lbl>Saddle lbl</lbl><input type="text" id="st1l" placeholder="Saddle" oninput="syncMounts()"></div>
+      <div><lbl>Rein lbl</lbl><input type="text" id="st2l" placeholder="Rein" oninput="syncMounts()"></div>
+    </div>
+  </div></div>
+
+  <div class="cs"><div class="cs-h">TRAIT COMBOS</div><div class="cs-b">
+    <div style="font-family:'Cinzel',serif;font-size:8px;color:#3a3060">Click a trait to level it up (0→5, wraps back to 0). 15 points per combo, max 5 traits.</div>
+    <div id="combo-ctrl"></div>
+    <button class="add" onclick="addCombo()">+ ADD COMBO (OR)</button>
+  </div></div>
+
+  <div class="cs"><div class="cs-h">EQUIPMENT SETS</div><div class="cs-b">
+    <div id="eq-ctrl"></div>
+    <button class="add" onclick="addSet()">+ ADD SET</button>
+  </div></div>
+
+  <div class="cs"><div class="cs-h">GENERAL STATS ALLOCATION</div><div class="cs-b">
+    <div style="font-family:'Cinzel',serif;font-size:8px;color:#3a3060;margin-bottom:4px">Core caps (fixed name, edit value/lines — override for Barbarian etc.)</div>
+    <div id="stat-caps-ctrl"></div>
+    <div style="font-family:'Cinzel',serif;font-size:8px;color:#3a3060;margin:6px 0 4px">Priority stats — top to bottom, drag order with ↑↓</div>
+    <div id="stat-priority-ctrl"></div>
+    <button class="add" onclick="addPriorityStat()">+ ADD STAT</button>
+    <datalist id="stat-name-suggestions"></datalist>
+  </div></div>
+
+</div><!-- /ctrl -->
+
+<!-- PREVIEW -->
+<div id="pv">
+  <div class="zb">
+    <span class="zl">PREVIEW — Click any icon box on card to upload image</span>
+    <button class="zbt" onclick="zoom(.1)">＋</button>
+    <span class="zv" id="zd2">60%</span>
+    <button class="zbt" onclick="zoom(-.1)">－</button>
+    <button class="btn btn-s" style="padding:4px 9px;font-size:8px" onclick="zFit()">FIT</button>
+  </div>
+  <div id="sw">
+  <div id="card">
+    <div id="cbg"></div>
+    <div id="cov"></div>
+    <div class="frame"></div>
+
+    <!-- Corners: code-drawn rounded arc + gem dot (matches EHT's UI corner style), mirrored via CSS transform -->
+    <div class="cn cn-tl"><svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6,26 Q6,6 26,6" fill="none" stroke="rgba(0,0,0,0.4)" stroke-width="3" stroke-linecap="round" opacity=".35" transform="translate(0.5,0.5)"/>
+      <path d="M6,26 Q6,6 26,6" fill="none" stroke="rgba(230,210,160,0.65)" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="9" cy="9" r="2.2" fill="#b5232f"/>
+      <circle cx="8.3" cy="8.3" r="0.8" fill="#e8828d"/>
+    </svg></div>
+    <div class="cn cn-tr"><svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6,26 Q6,6 26,6" fill="none" stroke="rgba(0,0,0,0.4)" stroke-width="3" stroke-linecap="round" opacity=".35" transform="translate(0.5,0.5)"/>
+      <path d="M6,26 Q6,6 26,6" fill="none" stroke="rgba(230,210,160,0.65)" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="9" cy="9" r="2.2" fill="#b5232f"/>
+      <circle cx="8.3" cy="8.3" r="0.8" fill="#e8828d"/>
+    </svg></div>
+    <div class="cn cn-bl"><svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6,26 Q6,6 26,6" fill="none" stroke="rgba(0,0,0,0.4)" stroke-width="3" stroke-linecap="round" opacity=".35" transform="translate(0.5,0.5)"/>
+      <path d="M6,26 Q6,6 26,6" fill="none" stroke="rgba(230,210,160,0.65)" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="9" cy="9" r="2.2" fill="#b5232f"/>
+      <circle cx="8.3" cy="8.3" r="0.8" fill="#e8828d"/>
+    </svg></div>
+    <div class="cn cn-br"><svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6,26 Q6,6 26,6" fill="none" stroke="rgba(0,0,0,0.4)" stroke-width="3" stroke-linecap="round" opacity=".35" transform="translate(0.5,0.5)"/>
+      <path d="M6,26 Q6,6 26,6" fill="none" stroke="rgba(230,210,160,0.65)" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="9" cy="9" r="2.2" fill="#b5232f"/>
+      <circle cx="8.3" cy="8.3" r="0.8" fill="#e8828d"/>
+    </svg></div>
+
+    <!-- Rune strips -->
+    <div class="rs rs-t">ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ ᚷ ᚹ ᚺ ᚾ ᛁ ᛃ ᛇ ᛈ ᛉ ᛊ ᛏ ᛒ ᛖ ᛗ ᛚ ᛜ ᛞ ᛟ</div>
+    <div class="rs rs-b">ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ ᚷ ᚹ ᚺ ᚾ ᛁ ᛃ ᛇ ᛈ ᛉ ᛊ ᛏ ᛒ ᛖ ᛗ ᛚ ᛜ ᛞ ᛟ</div>
+
+    <!-- Badge -->
+    <div id="badge"><img id="badge-img" src="" style="width:100%;height:100%;object-fit:contain"></div>
+
+    <!-- INNER -->
+    <div id="ci">
+      <!-- TITLE -->
+      <div id="ctb">
+        <div class="cmt" id="c-titlecard">~<span class="t-ds">DUNGEON</span> <span class="t-white">BUILD TITLE</span> <span class="t-gold">376F</span>~</div>
+      </div>
+
+      <!-- BODY -->
+      <div id="cb">
+        <!-- LEFT -->
+        <div id="cl">
+          <div id="c-crest"><img id="c-crest-img" alt=""></div>
+          <div>
+            <div class="pt">Subclasses</div>
+            <div class="sr" id="c-subs"></div>
+          </div>
+          <div class="cmg">
+            <div>
+              <div class="pt">Characteristic</div>
+              <div class="cv" id="c-charc2">Man of Steel</div>
+              <div class="cvd" id="c-chardesc">Decrease damage taken by 10%</div>
+            </div>
+            <div>
+              <div class="pt">Mount</div>
+              <div class="mts" id="c-mounts">
+                <div class="mslot"><div class="ms mount-ms" onclick="up('m0')">🐉</div><div class="ml" id="ml0">Skill</div></div>
+                <div class="ds" style="margin-top:4px">+</div>
+                <div class="mslot"><div class="ms mount-ms" onclick="up('m1')">⚡</div><div class="ml" id="ml1">Trait</div></div>
+                <div class="ds" id="mt-opt-sep" style="margin-top:4px;display:none">-</div>
+                <div class="mslot" id="mt-opt-slot" style="display:none"><div class="ms mount-ms" onclick="up('m2')" style="border-style:dashed;opacity:.5">?</div><div class="ml" id="ml2">OPT</div></div>
+                <div class="mslot" id="mt-add-opt"><div class="ms" onclick="showOptMount()" style="border-style:dashed;opacity:.6;font-size:9px;text-align:center;line-height:1.15">+ Add<br>Optional</div></div>
+              </div>
+              <div class="str">
+                <div><div class="ss mount-ms" onclick="up('st0')">🐴</div><div class="slv" id="slv0"></div><div class="sl" id="sl0">Horseshoe</div></div>
+                <div><div class="ss mount-ms" onclick="up('st1')">🐴</div><div class="slv" id="slv1"></div><div class="sl" id="sl1">Saddle</div></div>
+                <div><div class="ss mount-ms" onclick="up('st2')">🐴</div><div class="slv" id="slv2"></div><div class="sl" id="sl2">Rein</div></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="pt">Companion & Fairy</div>
+            <div class="cfg">
+              <div class="cfr">
+                <div class="cfic" id="cf-comp-ic">🐉</div>
+                <div class="cfb">
+                  <div class="cfn">Companion</div>
+                  <select id="c-comp-race" class="cfsel" onchange="syncCompFairy()"><option>Dragon</option><option>Any</option></select>
+                  <div class="cffix">HP + Gold Bonus</div>
+                </div>
+              </div>
+              <div class="cfr">
+                <div class="cfic" id="cf-fairy-ic">🧚</div>
+                <div class="cfb">
+                  <div class="cfn">Fairy</div>
+                  <select id="c-fairy-race" class="cfsel" onchange="syncCompFairy()"><option>Dragon</option><option>Any</option></select>
+                  <select id="c-fairy-buff" class="cfsel" onchange="syncCompFairy()"><option>HP Buff</option><option>Atk + Def Buff</option></select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="pt">Trait Combo</div>
+            <div id="c-trait-combos"></div>
+          </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div id="cr">
+          <div id="ccc">
+            <div class="ch">4TH CLASS</div>
+            <div class="cn2" id="c-clsc">Holy Knight</div>
+            <div class="cib">⚔</div>
+            <div class="pn">✦ Prio Max Lvl</div>
+            <div class="skc" id="c-skills"></div>
+          </div>
+          <div id="cec">
+            <div class="eh">EQUIPMENT</div>
+            <div id="c-sets"></div>
+            <div class="rv">
+              <div class="rp">
+                <div class="rh">Skill Runes</div>
+                <div class="rsr">
+                  <div><div class="rsl rune-ms" onclick="up('rn0')">⭐</div><div class="rl">Prio.</div></div>
+                  <div><div class="rsl rune-ms" onclick="up('rn1')">💀</div><div class="rl">Alt.</div></div>
+                </div>
+              </div>
+              <div class="vp">
+                <div class="vh">Virtue</div>
+                <div class="vgrid" id="c-virtues"></div>
+              </div>
+            </div>
+            <div class="sp2">
+              <div class="sh">General Stats Allocation</div>
+              <div class="sg" id="c-stats"></div>
+              <div class="sf">Note: Sorted by priority.</div>
+            </div>
+            <div class="sp2" id="c-desc-box" style="display:none">
+              <div class="sh">Description</div>
+              <div class="descbody" id="c-descbody"></div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /cb -->
+
+      <div id="cf">
+        <div class="fc" id="c-creditc">Created by: —</div>
+      </div>
+    </div><!-- /ci -->
+  </div><!-- /card -->
+  </div><!-- /sw -->
+</div><!-- /pv -->
+
+<input type="file" class="fi" id="fi" accept="image/*" onchange="handleUp(event)">
+
+<div class="mtpicker" id="mount-picker" style="display:none">
+  <div class="mtp-head"><div class="mtp-title" id="mtp-title">CHOOSE</div><div class="mtp-x" onclick="closeMountPicker()">✕</div></div>
+  <div class="mtp-grid" id="mtp-grid"></div>
+  <div class="mtp-upload" onclick="mountPickerUpload()">⬆ Upload custom image</div>
+</div>
+
+<div class="itpicker" id="item-picker" style="display:none">
+  <div class="itp-head"><div class="itp-title" id="itp-title">CHOOSE ITEM</div><div class="itp-x" onclick="closeItemPicker()">✕</div></div>
+  <div class="itp-tabs" id="itp-tabs"></div>
+  <div class="itp-grid" id="itp-grid"></div>
+</div>
+
+<div class="itpicker" id="rune-picker" style="display:none">
+  <div class="itp-head"><div class="itp-title">CHOOSE SKILL RUNE</div><div class="itp-x" onclick="closeRunePicker()">✕</div></div>
+  <div class="itp-grid" id="rnp-grid"></div>
+</div>
+
+<div class="itpicker" id="virtue-picker" style="display:none;width:190px;">
+  <div class="itp-head"><div class="itp-title">ADD VIRTUE</div><div class="itp-x" onclick="closeVirtuePicker()">✕</div></div>
+  <div class="itp-grid" id="vp-grid" style="grid-template-columns:repeat(3,1fr);"></div>
+</div>
+
+<div class="itpicker" id="virtue-edit-picker" style="display:none;width:170px;">
+  <div class="itp-head"><div class="itp-title" id="vep-title">EDIT VIRTUE</div><div class="itp-x" onclick="closeVirtueEditPicker()">✕</div></div>
+  <div id="vep-body" style="text-align:center;padding:6px 0 2px;"></div>
+</div>
+
+<script src="game-data.js"></script>
+<script src="card-app.js"></script>
+</body>
+</html>
